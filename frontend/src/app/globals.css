@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ========================================
+   Play Track (초등) - 파스텔 테마
+   ======================================== */
+.track-play {
+  --primary: #ff9ecd;
+  --primary-hover: #ff7eb8;
+  --secondary: #b4e4ff;
+  --accent: #fffab7;
+  --success: #98e4a0;
+  --background: #fff5f7;
+  --card-bg: #ffffff;
+  --text-primary: #5d4e6d;
+  --text-secondary: #8b7a9e;
+  --border: #ffd6e8;
+}
+
+.track-play body,
+.track-play main {
+  background: linear-gradient(135deg, #fff5f7 0%, #f0f7ff 100%);
+}
+
+.track-play .navbar {
+  background: linear-gradient(90deg, #ffe4ec 0%, #e4f0ff 100%);
+  border-bottom: 3px solid #ffd6e8;
+}
+
+/* Play Track 버튼 스타일 */
+.track-play .btn-primary {
+  background: linear-gradient(135deg, #ff9ecd 0%, #ffb6d9 100%);
+  border-radius: 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(255, 158, 205, 0.4);
+  transition: all 0.3s ease;
+}
+
+.track-play .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 158, 205, 0.5);
+}
+
+/* Play Track 카드 스타일 */
+.track-play .card {
+  background: white;
+  border: 2px solid #ffd6e8;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(255, 158, 205, 0.15);
+}
+
+/* ========================================
+   Pro Track (중/고등) - 깔끔한 테마
+   ======================================== */
+.track-pro {
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #64748b;
+  --accent: #10b981;
+  --success: #22c55e;
+  --background: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+}
+
+.track-pro body,
+.track-pro main {
+  background: #f8fafc;
+}
+
+.track-pro .navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Pro Track 버튼 스타일 */
+.track-pro .btn-primary {
+  background: #3b82f6;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.track-pro .btn-primary:hover {
+  background: #2563eb;
+}
+
+/* Pro Track 카드 스타일 */
+.track-pro .card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================
+   Pro Track 다크모드
+   ======================================== */
+.track-pro.dark {
+  --background: #0a0a0a;
+  --card-bg: #171717;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --border: #262626;
+}
+
+.track-pro.dark body,
+.track-pro.dark main {
+  background: #0a0a0a;
+  color: #f5f5f5;
+}
+
+.track-pro.dark .navbar {
+  background: #0a0a0a;
+  border-bottom: 1px solid #262626;
+}
+
+.track-pro.dark .card {
+  background: #171717;
+  border: 1px solid #262626;
+}
+
+/* ========================================
+   공통 애니메이션
+   ======================================== */
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 158, 205, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 158, 205, 0.5);
+  }
+}
+
+.track-play .animate-bounce-soft {
+  animation: bounce-soft 2s ease-in-out infinite;
+}
+
+.track-play .animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
