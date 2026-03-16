@@ -29,6 +29,7 @@ try:
     query_accuracy = """
     SELECT question_type, AVG(is_correct) * 100 as accuracy
     FROM practice_results
+    WHERE question_type IN ('어휘', '독해', '문법')
     GROUP BY question_type
     """
     df_acc = pd.read_sql(query_accuracy, conn)
@@ -75,6 +76,7 @@ try:
     query_funnel = """
     SELECT question_index, COUNT(*) as count
     FROM practice_results
+    WHERE question_index BETWEEN 1 AND 4
     GROUP BY question_index
     ORDER BY question_index
     """
@@ -111,11 +113,12 @@ try:
     print("3/3. 코호트(잔존율) 분석 중...")
     query_cohort = """
     SELECT 
-        DATE_FORMAT(u.created_at, '%Y-%u') AS signup_week,
+        DATE_FORMAT(u.created_at, '%x년 %v주차') AS signup_week,
         ROUND(COUNT(DISTINCT s.user_id) * 100.0 / COUNT(DISTINCT u.id), 1) AS retention_rate
     FROM users u
     LEFT JOIN practice_sessions s ON u.id = s.user_id 
         AND s.created_at > u.created_at + INTERVAL 7 DAY
+    WHERE u.created_at <= NOW() - INTERVAL 7 DAY
     GROUP BY 1
     ORDER BY 1;
     """
@@ -130,42 +133,42 @@ try:
     
     # 히트맵을 위한 데이터 전처리 (Index를 주차로 설정)
     df_cohort_hm = df_cohort.set_index('signup_week')
+    df_cohort_hm.columns = ['1주 후 잔존율'] # X축 레이블 한글화
     
-    # 구간별 색상 대비를 극대화하기 위해 동적 vmin/vmax 계산
-    # 데이터 범위가 좁아도 최소 10포인트 차이를 보장하여 색상 구분이 명확하게 보이도록 함
-    data_min = df_cohort_hm['retention_rate'].min()
-    data_max = df_cohort_hm['retention_rate'].max()
-    data_range = data_max - data_min
+    # 데이터 최솟값에 구애받지 않고 항상 뚜렷한 색상 대비를 보장하기 위해 vmin 계산
+    # 잔존율이 90 ~ 100 사이로 매우 높을 때 색이 너무 연해져 안 보이는 현상 방지
+    data_min = df_cohort_hm.values.min()
+    data_max = df_cohort_hm.values.max()
     
-    if data_range < 10:
-        # 범위가 좁으면 중심값 기준으로 ±5 범위를 잡아 색상 대비 극대화
-        center = (data_min + data_max) / 2
-        vmin = max(0, center - 5)
-        vmax = min(100, center + 5)
-    else:
-        vmin = max(0, data_min - 2)
-        vmax = min(100, data_max + 2)
+    vmin = max(0, data_min - 5) # 최소값보다 5% 낮게 설정해 가장 낮은 값도 일정 색상 확보
+    vmax = min(100, data_max + 2)
     
-    # Seaborn 히트맵 생성 (Blues: 높을수록 진한 파랑, 낮을수록 연한 하늘색)
+    # Seaborn 히트맵 생성
     ax = sns.heatmap(df_cohort_hm, annot=True, cmap='Blues', fmt='.1f', 
                 vmin=vmin, vmax=vmax,
                 cbar_kws={'label': '잔존율 (%)'}, linewidths=.8, linecolor='#FAFBFD',
-                annot_kws={'size': 13, 'weight': 'bold'})
+                annot_kws={'size': 14, 'weight': 'bold'})
     ax.set_facecolor('#FAFBFD')
     
-    # 셀 밝기에 따라 텍스트 색상을 동적으로 조정 (어두운 배경 → 흰색, 밝은 배경 → 검정)
+    # 셀 밝기에 따라 텍스트 색상을 동적으로 조정
+    # 어두운 배경 → 흰색 텍스트, 밝은 배경 → 어두운 회색 텍스트
     cmap_obj = matplotlib.colormaps['Blues']
     norm = plt.Normalize(vmin=vmin, vmax=vmax)
     for text_obj in ax.texts:
         val = float(text_obj.get_text())
         rgba = cmap_obj(norm(val))
-        # 밝기(luminance) 계산: 어두우면 흰색, 밝으면 검정
+        # 밝기(luminance) 계산 (Rec. 601 Luma)
         luminance = 0.299 * rgba[0] + 0.587 * rgba[1] + 0.114 * rgba[2]
-        text_obj.set_color('white' if luminance < 0.5 else '#2C3E50')
-    
+        if luminance < 0.6:
+            text_obj.set_color('white')
+        else:
+            text_obj.set_color('#2C3E50')
+            
     plt.title('가입 주차별 1주 후 잔존율 (Cohort Heatmap)', fontsize=15, pad=20, color='#2C3E50')
     plt.ylabel('가입 주차 (Year-Week)', fontsize=12, color='#555')
     plt.xlabel('')
+    plt.yticks(rotation=0) # y축 레이블(주차) 가로로 텍스트 출력
+    plt.xticks(rotation=0)
     plt.tight_layout()
     
     # 이미지 파일(PNG)로 저장
