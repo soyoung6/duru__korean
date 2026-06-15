@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "두루국어 - AI 국어 분석",
-  description: "AI로 분석하는 국어의 모든 것",
+  title: "Duru Korean - AI 국어 학습",
+  description: "AI와 더미 응답으로 체험할 수 있는 국어 지문 분석 학습 서비스",
 };
 
 export default function RootLayout({ children }) {
