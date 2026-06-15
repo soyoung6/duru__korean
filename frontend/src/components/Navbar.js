@@ -38,7 +38,12 @@ export default function Navbar() {
     router.push("/");
   };
 
-  if (pathname === "/" || pathname === "/signup" || pathname === "/select-track") {
+  if (
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/select-track"
+  ) {
     return null;
   }
 
@@ -111,10 +116,10 @@ export default function Navbar() {
             </>
           ) : (
             <Link
-              href="/"
+              href="/login"
               className="rounded-md bg-blue-600 px-4 py-2 font-bold text-white transition hover:bg-blue-700"
             >
-              홈
+              로그인
             </Link>
           )}
         </div>

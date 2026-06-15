@@ -151,6 +151,12 @@ export default function HomePage() {
                 바로 체험하기
               </a>
               <Link
+                href="/login"
+                className="rounded-md bg-white px-5 py-3 font-bold text-[#233d4d] transition hover:bg-[#edf2f4]"
+              >
+                로그인
+              </Link>
+              <Link
                 href="/signup"
                 className="rounded-md border border-white/35 px-5 py-3 font-bold text-white transition hover:bg-white/10"
               >

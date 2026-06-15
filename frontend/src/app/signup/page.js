@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -15,18 +15,17 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = (event) => {
+    setFormData((current) => ({
+      ...current,
+      [event.target.name]: event.target.value,
+    }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError("");
 
-    // 비밀번호 확인
     if (formData.password !== formData.confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
@@ -55,109 +54,102 @@ export default function SignupPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
-        alert("회원가입 성공! 로그인 해주세요.");
-        router.push("/");
-      } else {
-        setError(data.detail || "회원가입에 실패했습니다.");
+      if (!response.ok) {
+        throw new Error(data.detail || "회원가입에 실패했습니다.");
       }
+
+      router.push("/login");
     } catch (err) {
-      setError("서버 연결에 실패했습니다.");
+      setError(err.message || "서버 연결에 실패했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
-          📚 두루국어 회원가입
-        </h1>
+    <main className="flex min-h-screen items-center justify-center bg-[#f7f7f2] px-5 py-12 text-[#1f2933]">
+      <div className="w-full max-w-md rounded-lg border border-[#dad7cd] bg-white p-8 shadow-xl">
+        <Link href="/" className="text-sm font-bold text-[#619b8a] hover:text-[#317163]">
+          Duru Korean
+        </Link>
+        <h1 className="mt-4 text-3xl font-bold">회원가입</h1>
+        <p className="mt-2 text-sm leading-6 text-[#52616b]">
+          계정을 만들면 분석 기록과 연습 문제를 이어서 관리할 수 있습니다.
+        </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              아이디
-            </label>
-            <input
-              type="text"
-              name="username"
-              placeholder="아이디를 입력하세요"
-              className="w-full p-3 border rounded-lg border-gray-300 text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              닉네임
-            </label>
-            <input
-              type="text"
-              name="nickname"
-              placeholder="닉네임을 입력하세요"
-              className="w-full p-3 border rounded-lg border-gray-300 text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={formData.nickname}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              비밀번호
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="비밀번호를 입력하세요"
-              className="w-full p-3 border rounded-lg border-gray-300 text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              비밀번호 확인
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="비밀번호를 다시 입력하세요"
-              className="w-full p-3 border rounded-lg border-gray-300 text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <TextInput
+            label="아이디"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
+          <TextInput
+            label="닉네임"
+            name="nickname"
+            value={formData.nickname}
+            onChange={handleChange}
+            required
+          />
+          <TextInput
+            label="비밀번호"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <TextInput
+            label="비밀번호 확인"
+            name="confirmPassword"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600 text-sm">{error}</p>
-            </div>
+            <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 text-white p-3 rounded-lg font-bold hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full rounded-md bg-[#fe7f2d] px-5 py-3 font-bold text-white transition hover:bg-[#d9651f] disabled:bg-[#c8c5b9]"
           >
             {loading ? "가입 중..." : "회원가입"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          이미 계정이 있으신가요?{" "}
-          <Link href="/" className="text-blue-500 hover:underline">
+        <p className="mt-5 text-center text-sm text-[#52616b]">
+          이미 계정이 있다면{" "}
+          <Link href="/login" className="font-bold text-[#233d4d] hover:text-[#111f28]">
             로그인
           </Link>
         </p>
       </div>
     </main>
+  );
+}
+
+function TextInput({ label, name, value, onChange, type = "text", required = false }) {
+  return (
+    <div>
+      <label className="block text-sm font-bold text-[#233d4d]" htmlFor={name}>
+        {label}
+      </label>
+      <input
+        id={name}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        className="mt-2 w-full rounded-md border border-[#c8c5b9] px-3 py-3 outline-none focus:border-[#619b8a]"
+        required={required}
+      />
+    </div>
   );
 }
